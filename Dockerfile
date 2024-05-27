@@ -21,7 +21,7 @@ COPY --from=build /usr/local /usr/local
 
 # Dump some version info
 WORKDIR /root
-CMD figlet -f small -w 60 docker run deanturpin/gcc && \
+CMD figlet deanturpin/gcc && \
 	neofetch --stdout && \
 	g++ --version && \
 	xz --version && \
