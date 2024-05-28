@@ -22,7 +22,7 @@ COPY --from=build /usr/local /usr/local
 # Dump some version info
 WORKDIR /root
 CMD figlet deanturpin/gcc && \
-	neofetch --stdout && \
-	g++ --version && \
-	xz --version && \
-	dpkg -l $PACKAGES
+    neofetch --stdout && \
+    g++ --version && \
+    xz --version && \
+    dpkg -l $PACKAGES
