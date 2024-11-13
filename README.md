@@ -2,7 +2,7 @@
 
 Nightly build of gcc from source. See the [Dockerfile](https://github.com/deanturpin/gcc/blob/main/Dockerfile).
 
-Snapshot of dumping the compiler version on the date shown.
+Snapshot of dumping the compiler version on the date shown. You can expose your local filesystem to the container to build local files with the latest compiler.
 
 ```bash
 $ date
