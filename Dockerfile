@@ -1,10 +1,14 @@
-FROM deanturpin/dev
+FROM ubuntu:plucky
+
+RUN apt update && \
+    apt install --yes \
+        git build-essential make figlet neofetch \
+        libgmp3-dev libmpfr-dev libmpc-dev libz-dev flex file
 
 # Shallow clone the source
 RUN git clone --depth=1 git://gcc.gnu.org/git/gcc.git
 
 # Configure the compiler
-RUN apt install --yes libgmp3-dev libmpfr-dev libmpc-dev libz-dev flex file
 RUN mkdir build
 WORKDIR build
 RUN ../gcc/configure --enable-languages=c++ --disable-multilib --with-system-zlib --disable-bootstrap
