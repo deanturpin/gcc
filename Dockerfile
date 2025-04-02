@@ -1,4 +1,4 @@
-FROM ubuntu:plucky
+FROM gcc
 
 RUN apt update && \
     apt install --yes \
