@@ -1,8 +1,10 @@
 FROM gcc
 
+RUN echo Using $(nproc) cores
+
 RUN apt update && \
     apt install --yes figlet neofetch \
-        libgmp3-dev libmpfr-dev libmpc-dev libz-dev
+        libgmp3-dev libmpfr-dev libmpc-dev libz-dev flex
 
 # Shallow clone the source
 RUN git clone --depth=1 git://gcc.gnu.org/git/gcc.git
