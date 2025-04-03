@@ -1,11 +1,8 @@
 FROM gcc
 
 RUN apt update && \
-    apt install --yes \
-        git build-essential make figlet neofetch \
-        libgmp3-dev libmpfr-dev libmpc-dev libz-dev flex file && \
-    apt --yes autoremove && \
-    apt --yes autoclean
+    apt install --yes figlet neofetch \
+        libgmp3-dev libmpfr-dev libmpc-dev libz-dev
 
 # Shallow clone the source
 RUN git clone --depth=1 git://gcc.gnu.org/git/gcc.git
