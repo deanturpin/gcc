@@ -1,9 +1,10 @@
-FROM gcc
+FROM ubuntu:plucky
 
 RUN echo Using $(nproc) cores
 
 RUN apt update && \
     apt install --yes figlet neofetch \
+        git make cmake build-essential \
         libgmp3-dev libmpfr-dev libmpc-dev libz-dev flex
 
 # Shallow clone the source
