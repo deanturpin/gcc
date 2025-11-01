@@ -31,6 +31,4 @@ COPY --from=builder /gcc-install/usr/local /usr/local
 
 # Dump some version info
 WORKDIR /root
-CMD figlet deanturpin/gcc && \
-    neofetch --stdout && \
-    g++ --version
+CMD ["sh", "-c", "figlet deanturpin/gcc && neofetch --stdout && g++ --version"]
