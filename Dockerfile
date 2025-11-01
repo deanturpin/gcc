@@ -11,8 +11,8 @@ RUN apt update && \
 RUN git clone --depth=1 git://gcc.gnu.org/git/gcc.git
 
 # Configure the compiler
-RUN mkdir build
-WORKDIR build
+RUN mkdir /build
+WORKDIR /build
 RUN ../gcc/configure --enable-languages=c++ --disable-multilib --with-system-zlib --disable-bootstrap
 
 # Build and install to a temporary location
