@@ -1,5 +1,5 @@
 # Build stage
-FROM ubuntu:plucky AS builder
+FROM ubuntu:noble AS builder
 
 RUN echo Using $(nproc) cores
 
@@ -7,8 +7,12 @@ RUN apt update && \
     apt install --yes git make cmake build-essential \
         libgmp3-dev libmpfr-dev libmpc-dev libz-dev flex
 
-# Shallow clone the source
-RUN git clone --depth=1 git://gcc.gnu.org/git/gcc.git
+# Shallow clone the tip of trunk. GCC_COMMIT (the current trunk commit) is
+# only there to invalidate Docker's cached clone, so a rebuild fetches new
+# source rather than reusing the last one
+ARG GCC_COMMIT
+RUN echo Building trunk at ${GCC_COMMIT} && \
+    git clone --depth=1 https://gcc.gnu.org/git/gcc.git
 
 # Configure the compiler
 RUN mkdir /build
@@ -20,7 +24,7 @@ RUN make --silent -j $(nproc)
 RUN make -j $(nproc) install DESTDIR=/gcc-install
 
 # Final stage - minimal runtime image
-FROM ubuntu:plucky
+FROM ubuntu:noble
 
 RUN apt update && \
     apt install --yes figlet neofetch libgmp10 libmpfr6 libmpc3 zlib1g && \

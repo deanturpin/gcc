@@ -1,8 +1,13 @@
 # gcc
 
-Nightly build of gcc from source. See the [Dockerfile](https://github.com/deanturpin/gcc/blob/main/Dockerfile).
+Nightly build of gcc from source, published to Docker Hub as
+`deanturpin/gcc:latest` and `deanturpin/gcc:YYYYMMDD` by a
+[GitHub Actions workflow](.github/workflows/nightly.yml). See the
+[Dockerfile](Dockerfile).
 
-Snapshot of dumping the compiler version on the date shown. You can expose your local filesystem to the container to build local files with the latest compiler.
+Snapshot of dumping the compiler version on the date shown. You can expose
+your local filesystem to the container to build local files with the latest
+compiler.
 
 ```bash
 $ date
@@ -17,9 +22,9 @@ warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 
 ## Develop
 
-Just for info, I use `entr` to speed up the oftentimes painful Dockerfile writing experience.
+Just for info, I use `entr` to speed up the oftentimes painful Dockerfile
+writing experience.
 
 ```bash
  ls Dockerfile | entr -cr docker build -t gcc .
 ```
-
