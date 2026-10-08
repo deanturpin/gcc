@@ -50,17 +50,32 @@ The GCC build is configured with:
 
 ## Base Image
 
-A multi-stage build on `ubuntu:noble` (24.04 LTS, supported to 2029): the
-builder stage installs the build tools and GCC's dependencies (`libgmp3-dev`,
-`libmpfr-dev`, `libmpc-dev`, `libz-dev`, `flex`), and the final stage holds
-only the installed compiler, its runtime libraries, and `figlet` and
-`neofetch` for the version banner.
+A multi-stage build on `ubuntu:noble` (24.04 LTS, supported to 2029), with
+`apt-get --no-install-recommends` throughout. The builder stage installs the
+build tools and GCC's dependencies (`libgmp3-dev`, `libmpfr-dev`,
+`libmpc-dev`, `libz-dev`, and `flex`, which a git checkout needs), plus
+`ca-certificates` for the https clone. The final stage holds the installed
+compiler, `binutils` and `libc6-dev` (without which it can compile nothing),
+`make`, `cmake` and `ninja`, and `figlet` and `neofetch` for the banner. Its
+`org.opencontainers.image.revision` label is the trunk commit built.
 
 ## Nightly build
 
-`.github/workflows/nightly.yml` builds and pushes `deanturpin/gcc:latest` and
-a dated tag (`deanturpin/gcc:YYYYMMDD`) at 02:00 UTC every night, on demand,
-and when the Dockerfile changes. It needs the repository secrets
-`DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN` (a Docker Hub access token with
-write access). It passes the trunk commit as `GCC_COMMIT`, which busts the
-cached clone; without it a rebuild reuses the old source.
+`.github/workflows/nightly.yml` runs at 02:00 UTC every night, on demand,
+and when the Dockerfile or workflow changes on `main`; a pull request
+touching either builds and tests but never publishes. Three jobs:
+
+- `resolve` pins one trunk commit and date, passed to the build as
+  `GCC_COMMIT`, which busts the cached clone (without it a rebuild reuses
+  the old source) and becomes the image's revision label.
+- `build` runs natively for amd64 (`ubuntu-24.04`) and arm64
+  (`ubuntu-24.04-arm`). Each builds, smoke-tests (version, tools, label, and
+  a C++26 program compiled and run), and only then pushes by digest.
+- `publish` tags both digests together as `deanturpin/gcc:latest` and
+  `deanturpin/gcc:YYYYMMDD`, then sets Docker Hub's short description and
+  overview: this README with its version block filled in from the published
+  image.
+
+It needs the repository secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
+The token needs Read, Write, Delete: Read & Write pushes images but Docker
+Hub refuses description edits without Delete.
