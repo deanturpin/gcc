@@ -1,5 +1,6 @@
-# Build stage
-FROM ubuntu:noble AS builder
+# Build stage. rolling is always the newest Ubuntu release, so the tools
+# stay current and the base never falls out of support
+FROM ubuntu:rolling AS builder
 
 # Building from a git checkout, unlike a release tarball, needs flex.
 # ca-certificates is named because --no-install-recommends drops it, and the
@@ -7,7 +8,7 @@ FROM ubuntu:noble AS builder
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
         build-essential ca-certificates git flex \
-        libgmp3-dev libmpfr-dev libmpc-dev libz-dev
+        libgmp-dev libmpfr-dev libmpc-dev zlib1g-dev
 
 # Shallow clone the tip of trunk. GCC_COMMIT (the current trunk commit) is
 # only there to invalidate Docker's cached clone, so a rebuild fetches new
@@ -26,7 +27,7 @@ RUN make --silent -j $(nproc)
 RUN make -j $(nproc) install DESTDIR=/gcc-install
 
 # Final stage - minimal runtime image
-FROM ubuntu:noble
+FROM ubuntu:rolling
 
 # The trunk commit this compiler was built from, so `docker inspect` can
 # trace a regression to its source

@@ -47,4 +47,4 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
           repository: deanturpin/gcc
           readme-filepath: ${{ runner.temp }}/README.md
-          short-description: GCC trunk built from source every night for amd64 and arm64, C++ only, on Ubuntu 24.04
+          short-description: GCC trunk built from source every night for amd64 and arm64, C++ only, on the latest Ubuntu

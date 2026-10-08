@@ -50,10 +50,13 @@ The GCC build is configured with:
 
 ## Base Image
 
-A multi-stage build on `ubuntu:noble` (24.04 LTS, supported to 2029), with
-`apt-get --no-install-recommends` throughout. The builder stage installs the
-build tools and GCC's dependencies (`libgmp3-dev`, `libmpfr-dev`,
-`libmpc-dev`, `libz-dev`, and `flex`, which a git checkout needs), plus
+A multi-stage build on `ubuntu:rolling`, the newest Ubuntu release (26.04
+in October 2026, moving to 26.10 when it ships), so the tools stay current
+and the base never goes out of support as the pinned `plucky` did. A new
+release can rename a package; the smoke test then stops the publish. It
+uses `apt-get --no-install-recommends` throughout. The builder stage installs the
+build tools and GCC's dependencies (`libgmp-dev`, `libmpfr-dev`,
+`libmpc-dev`, `zlib1g-dev`, and `flex`, which a git checkout needs), plus
 `ca-certificates` for the https clone. The final stage holds the installed
 compiler, `binutils` and `libc6-dev` (without which it can compile nothing),
 `make`, `cmake` and `ninja`, and `figlet` and `neofetch` for the banner. Its
