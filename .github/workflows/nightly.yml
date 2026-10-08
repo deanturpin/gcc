@@ -145,7 +145,8 @@ jobs:
             date -u
             echo
             echo '$ docker run deanturpin/gcc g++ --version'
-            docker run --rm "$IMAGE:latest" g++ --version
+            # g++ ends with a blank line, which would show inside the fence
+            docker run --rm "$IMAGE:latest" g++ --version | sed '/^$/d'
             echo '```'
           } > "$RUNNER_TEMP/version.md"
           python3 - "$RUNNER_TEMP/version.md" "$RUNNER_TEMP/README.md" <<'PY'
