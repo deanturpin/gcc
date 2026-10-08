@@ -9,9 +9,12 @@ on:
   push:
     branches: [main]
     paths: [Dockerfile, .github/workflows/nightly.yml]
+  # A pull request builds and tests the image but never publishes it
+  pull_request:
+    paths: [Dockerfile, .github/workflows/nightly.yml]
 
 concurrency:
-  group: nightly
+  group: nightly-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -32,14 +35,17 @@ jobs:
       - uses: docker/setup-buildx-action@v3
 
       - uses: docker/login-action@v3
+        if: github.event_name != 'pull_request'
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+      # Build into the runner's Docker first, so a compiler that can't build
+      # and run a program is never published
       - uses: docker/build-push-action@v6
         with:
           context: .
-          push: true
+          load: true
           build-args: GCC_COMMIT=${{ steps.gcc.outputs.sha }}
           tags: |
             deanturpin/gcc:latest
@@ -51,3 +57,9 @@ jobs:
           printf '#include <print>\nint main() { std::println("hello from {}", __VERSION__); }\n' > hello.cxx
           docker run --rm -v "$PWD:/w" -w /w deanturpin/gcc:latest \
             sh -c 'g++ -std=c++26 hello.cxx -o hello && ./hello'
+
+      - name: Push
+        if: github.event_name != 'pull_request'
+        run: |
+          docker push deanturpin/gcc:latest
+          docker push deanturpin/gcc:${{ steps.gcc.outputs.date }}

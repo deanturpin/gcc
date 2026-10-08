@@ -26,12 +26,19 @@ RUN make -j $(nproc) install DESTDIR=/gcc-install
 # Final stage - minimal runtime image
 FROM ubuntu:noble
 
+# The compiler alone can't build anything: it needs the assembler and linker
+# (binutils) and the C library's headers and start files (libc6-dev)
 RUN apt update && \
-    apt install --yes figlet neofetch libgmp10 libmpfr6 libmpc3 zlib1g && \
+    apt install --yes binutils libc6-dev figlet neofetch \
+        libgmp10 libmpfr6 libmpc3 zlib1g && \
     rm -rf /var/lib/apt/lists/*
 
 # Copy only the installed GCC binaries from builder
 COPY --from=builder /gcc-install/usr/local /usr/local
+
+# Programs it builds need its own libstdc++, newer than the system's, so put
+# its libraries ahead of the system's in the loader's search
+RUN echo /usr/local/lib64 > /etc/ld.so.conf.d/00-gcc.conf && ldconfig
 
 # Dump some version info
 WORKDIR /root
