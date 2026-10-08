@@ -42,7 +42,7 @@ LABEL org.opencontainers.image.revision=${GCC_COMMIT} \
 # cmake and ninja are there so it builds whole projects, not just files
 RUN apt-get update && \
     apt-get install --yes --no-install-recommends \
-        binutils libc6-dev make cmake ninja-build figlet neofetch \
+        binutils libc6-dev make cmake ninja-build figlet \
         libgmp10 libmpfr6 libmpc3 zlib1g && \
     rm -rf /var/lib/apt/lists/*
 
@@ -55,4 +55,5 @@ RUN printf '/usr/local/lib64\n/usr/local/lib\n' > /etc/ld.so.conf.d/00-gcc.conf 
 
 # Dump some version info
 WORKDIR /root
-CMD ["sh", "-c", "figlet deanturpin/gcc && neofetch --stdout && g++ --version"]
+# neofetch is gone from Ubuntu as of 26.04, so the release comes from os-release
+CMD ["sh", "-c", ". /etc/os-release && figlet deanturpin/gcc && echo \"$PRETTY_NAME, $(uname -m)\" && g++ --version"]

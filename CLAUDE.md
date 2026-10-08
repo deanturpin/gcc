@@ -59,7 +59,8 @@ build tools and GCC's dependencies (`libgmp-dev`, `libmpfr-dev`,
 `libmpc-dev`, `zlib1g-dev`, and `flex`, which a git checkout needs), plus
 `ca-certificates` for the https clone. The final stage holds the installed
 compiler, `binutils` and `libc6-dev` (without which it can compile nothing),
-`make`, `cmake` and `ninja`, and `figlet` and `neofetch` for the banner. Its
+`make`, `cmake` and `ninja`, and `figlet` for the banner (`neofetch`, which
+Ubuntu dropped in 26.04, went with the move to `rolling`). Its
 `org.opencontainers.image.revision` label is the trunk commit built.
 
 ## Nightly build

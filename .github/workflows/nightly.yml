@@ -72,7 +72,8 @@ jobs:
 
       - name: Smoke test
         run: |
-          docker run --rm gcc:test g++ --version
+          # The default command, the banner people see first
+          docker run --rm gcc:test
           docker run --rm gcc:test sh -c 'make --version && cmake --version && ninja --version' | grep -i version
           test "$(docker inspect -f '{{ index .Config.Labels "org.opencontainers.image.revision" }}' gcc:test)" = "${{ needs.resolve.outputs.sha }}"
           printf '#include <print>\nint main() { std::println("hello from {}", __VERSION__); }\n' > hello.cxx
