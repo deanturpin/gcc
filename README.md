@@ -6,11 +6,14 @@ Nightly build of gcc from source, published to Docker Hub as
 [Dockerfile](Dockerfile).
 
 Tags are `latest` and the build date, so `deanturpin/gcc:20261008` is GCC
-trunk as it stood that day. To see the version:
+trunk as it stood that day. On Docker Hub the block below shows the latest
+build's real output, written by each night's run.
 
+<!-- version -->
 ```bash
 docker run --rm deanturpin/gcc g++ --version
 ```
+<!-- /version -->
 
 Mount your working directory to build local files with the latest compiler:
 
