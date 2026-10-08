@@ -5,19 +5,20 @@ Nightly build of gcc from source, published to Docker Hub as
 [GitHub Actions workflow](.github/workflows/nightly.yml). See the
 [Dockerfile](Dockerfile).
 
-Snapshot of dumping the compiler version on the date shown. You can expose
-your local filesystem to the container to build local files with the latest
-compiler.
+Tags are `latest` and the build date, so `deanturpin/gcc:20261008` is GCC
+trunk as it stood that day. On Docker Hub the block below shows the latest
+build's real output, written by each night's run.
+
+<!-- version -->
+```bash
+docker run --rm deanturpin/gcc g++ --version
+```
+<!-- /version -->
+
+Mount your working directory to build local files with the latest compiler:
 
 ```bash
-$ date
-Wed Nov 13 22:53:21 UTC 2024
-
-$ docker run deanturpin/gcc g++ --version
-g++ (GCC) 15.0.0 20241113 (experimental)
-Copyright (C) 2024 Free Software Foundation, Inc.
-This is free software; see the source for copying conditions.  There is NO
-warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+docker run --rm -v "$PWD:/w" -w /w deanturpin/gcc g++ -std=c++26 hello.cxx -o hello
 ```
 
 ## Develop
