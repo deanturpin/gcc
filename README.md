@@ -2,8 +2,12 @@
 
 Nightly build of gcc from source, published to Docker Hub as
 `deanturpin/gcc:latest` and `deanturpin/gcc:YYYYMMDD` by a
-[GitHub Actions workflow](.github/workflows/nightly.yml). See the
-[Dockerfile](Dockerfile).
+[GitHub Actions workflow](https://github.com/deanturpin/gcc/blob/main/.github/workflows/nightly.yml).
+See the [Dockerfile](https://github.com/deanturpin/gcc/blob/main/Dockerfile)
+and the source at [github.com/deanturpin/gcc](https://github.com/deanturpin/gcc).
+
+Links here are absolute, because this README is also the Docker Hub page,
+where relative links break.
 
 Each build is native for amd64 and arm64 (Apple silicon included), under the
 same tags, so Docker pulls the right one. Alongside the compiler the image

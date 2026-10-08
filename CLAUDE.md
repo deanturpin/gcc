@@ -63,7 +63,7 @@ compiler, `binutils` and `libc6-dev` (without which it can compile nothing),
 
 `.github/workflows/nightly.yml` runs at 02:00 UTC every night, on demand,
 and when the Dockerfile or workflow changes on `main`; a pull request
-touching either builds and tests but never publishes. Three jobs:
+touching either builds and tests but never publishes. Four jobs:
 
 - `resolve` pins one trunk commit and date, passed to the build as
   `GCC_COMMIT`, which busts the cached clone (without it a rebuild reuses
@@ -72,9 +72,12 @@ touching either builds and tests but never publishes. Three jobs:
   (`ubuntu-24.04-arm`). Each builds, smoke-tests (version, tools, label, and
   a C++26 program compiled and run), and only then pushes by digest.
 - `publish` tags both digests together as `deanturpin/gcc:latest` and
-  `deanturpin/gcc:YYYYMMDD`, then sets Docker Hub's short description and
-  overview: this README with its version block filled in from the published
-  image.
+  `deanturpin/gcc:YYYYMMDD`.
+- `overview` calls `.github/workflows/dockerhub.yml`, which sets Docker
+  Hub's short description and overview: this README with its version block
+  filled in from the published image. It also runs alone, in about a minute,
+  when the README changes. The README is the Docker Hub page too, so its
+  links must be absolute URLs; relative ones break there.
 
 It needs the repository secrets `DOCKERHUB_USERNAME` and `DOCKERHUB_TOKEN`.
 The token needs Read, Write, Delete: Read & Write pushes images but Docker

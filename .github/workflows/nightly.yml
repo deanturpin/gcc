@@ -135,37 +135,8 @@ jobs:
             $(printf "$IMAGE@sha256:%s " *)
           docker buildx imagetools inspect "$IMAGE:latest"
 
-      # Docker Hub's overview is this README with its version block filled
-      # in from the image just published; the repository's copy is untouched
-      - name: Write Docker Hub overview
-        run: |
-          {
-            echo '```bash'
-            echo '$ date'
-            date -u
-            echo
-            echo '$ docker run deanturpin/gcc g++ --version'
-            # g++ ends with a blank line, which would show inside the fence
-            docker run --rm "$IMAGE:latest" g++ --version | sed '/^$/d'
-            echo '```'
-          } > "$RUNNER_TEMP/version.md"
-          python3 - "$RUNNER_TEMP/version.md" "$RUNNER_TEMP/README.md" <<'PY'
-          import re, sys
-          block = open(sys.argv[1]).read()
-          readme = open("README.md").read()
-          readme = re.sub(r"(<!-- version -->\n).*?(<!-- /version -->)",
-                          lambda m: m[1] + block + m[2], readme, flags=re.S)
-          open(sys.argv[2], "w").write(readme)
-          PY
-
-      # A token without the scope to edit the description mustn't turn a
-      # build that has already published red
-      - name: Update Docker Hub description
-        continue-on-error: true
-        uses: peter-evans/dockerhub-description@v4
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-          repository: deanturpin/gcc
-          readme-filepath: ${{ runner.temp }}/README.md
-          short-description: GCC trunk built from source every night for amd64 and arm64, C++ only, on Ubuntu 24.04
+  # Docker Hub's summary and overview, refreshed from the image just published
+  overview:
+    needs: publish
+    uses: ./.github/workflows/dockerhub.yml
+    secrets: inherit
