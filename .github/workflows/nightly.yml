@@ -1,0 +1,53 @@
+name: nightly
+
+# Build GCC from the tip of trunk every night and publish it to Docker Hub
+# as deanturpin/gcc:latest, plus a dated tag so older snapshots stay pullable.
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: [Dockerfile, .github/workflows/nightly.yml]
+
+concurrency:
+  group: nightly
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300
+    steps:
+      - uses: actions/checkout@v4
+
+      # The trunk commit being built; it busts Docker's layer cache for the
+      # clone, which would otherwise rebuild the same old source forever.
+      - name: Resolve GCC trunk
+        id: gcc
+        run: |
+          echo "sha=$(git ls-remote https://gcc.gnu.org/git/gcc.git refs/heads/master | cut -f1)" >> "$GITHUB_OUTPUT"
+          echo "date=$(date -u +%Y%m%d)" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          build-args: GCC_COMMIT=${{ steps.gcc.outputs.sha }}
+          tags: |
+            deanturpin/gcc:latest
+            deanturpin/gcc:${{ steps.gcc.outputs.date }}
+
+      - name: Smoke test
+        run: |
+          docker run --rm deanturpin/gcc:latest g++ --version
+          printf '#include <print>\nint main() { std::println("hello from {}", __VERSION__); }\n' > hello.cxx
+          docker run --rm -v "$PWD:/w" -w /w deanturpin/gcc:latest \
+            sh -c 'g++ -std=c++26 hello.cxx -o hello && ./hello'
