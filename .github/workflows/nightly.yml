@@ -63,3 +63,17 @@ jobs:
         run: |
           docker push deanturpin/gcc:latest
           docker push deanturpin/gcc:${{ steps.gcc.outputs.date }}
+
+
+      # Keep the Docker Hub page's summary and overview (this README) current;
+      # a token without the scope for it mustn't fail a build that has
+      # already published
+      - name: Update Docker Hub description
+        if: github.event_name != 'pull_request'
+        continue-on-error: true
+        uses: peter-evans/dockerhub-description@v4
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: deanturpin/gcc
+          short-description: GCC trunk built from source every night, C++ only, on Ubuntu 24.04
